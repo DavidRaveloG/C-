@@ -1,0 +1,138 @@
+#ifndef Liblsita_H
+#define Lib_lista_H
+#include <iostream>
+using namespace std;
+/*
+
+Integrantes:
+
+	- Julian Alejandro Sarmiento Linares 	- 20181020042
+	- Juan Camilo Ramírez Rátiva 			- 20181020089
+	- David Fernando Ravelo Garavito 		- 20191020061 
+
+*/
+struct NODO{ 
+		   int *info;
+           NODO *izq, *der;
+		   };
+class ARBOL{
+	NODO *raiz;
+	public:	ARBOL( ){
+		raiz=NULL;
+		}
+	NODO *raiz_arbol( ){
+		return raiz;
+		}
+	int ins_arbol (int []);
+	void borrar_nodo(NODO *, NODO *);
+	NODO *buscar_arbol (int[], NODO *, NODO *);
+	NODO *buscar(int[], NODO **, NODO *);
+	int retira_arbol(int[]);
+	void Mostrar(NODO *);
+	void destruir (NODO *p);
+	
+	~ARBOL( );
+	};
+int ARBOL:: ins_arbol(int n[]){
+	NODO *q;
+	if (raiz == NULL){
+		raiz= new NODO;
+		raiz->info=n;
+		raiz->izq=raiz->der=NULL;
+		return 0;
+	}
+	q=buscar_arbol(n,raiz,NULL);
+	if (q==NULL) return -1;
+	NODO *nuevo;
+	nuevo= new NODO;
+	nuevo->info = n;
+	nuevo->izq=nuevo->der=NULL;
+	if (n<q->info) q->izq=nuevo;
+	else  q->der=nuevo;
+	return 0;
+}
+NODO *ARBOL::buscar_arbol(int n[], NODO *p, NODO *q){
+	if (p==NULL) return q;
+	if (n < p->info){
+		q=p;
+		q=buscar_arbol(n,p->izq,q);
+		return q;
+	}
+	else if (n > p->info) {
+		q=p;
+		q=buscar_arbol(n,p->der,q);
+		return q;
+	}
+	    else return NULL;
+	}
+void ARBOL::borrar_nodo (NODO *q, NODO *p){
+	NODO  *r, *s,*t;
+	if (p->izq==NULL) r=p->der;
+	else if (p->der==NULL) r=p->izq; 
+	else {
+		s =p;
+		r=p->der;
+		t=r->izq;
+		while(t!=NULL){
+			s=r; r=t; t=t->izq;
+		}
+		if (p!=s){
+			s->izq=r->der;
+		    r->der=p->der; 
+		}
+		r->izq =p->izq;
+	}
+		if (q==NULL) raiz= r;
+		else if (p==q->izq) q->izq =r;
+		else q->der = r;
+		delete p;
+}
+NODO *ARBOL::buscar(int n[], NODO **p, NODO *q){
+	if ((*p)==NULL) return NULL;
+	if ((*p)->info>n){
+	    q=*p;
+		*p=(*p)->izq;
+	    q=buscar(n,p,q);
+	    return q;
+	}
+	else if (n>(*p)->info){
+		q=*p;
+		*p=(*p)->der;
+		q =buscar(n,p,q);
+		return q;
+	}
+	else return q;
+}
+int ARBOL:: retira_arbol(int n[]){
+	NODO *q, *p=raiz;
+	q=buscar(n,&p,NULL);
+	if (p==NULL) return -1;
+	borrar_nodo(q,p);
+	return 0;
+}
+void ARBOL::Mostrar(NODO *p){
+	int i=0;
+	if (p!=NULL){
+		cout<<"{ ";
+	    while(p->info[i]!=NULL){
+	    	cout<<p->info[i]<<",";
+	    	i++;
+		}
+		cout<<"} "<<endl;
+		Mostrar(p->der);
+		Mostrar(p->izq);
+		    
+	}
+}
+void ARBOL::destruir(NODO *p){
+	if (p!=NULL){
+	    destruir(p->izq);
+	    destruir(p->der);
+	    delete p;
+	    cout<<"Nodo destruido..."<< endl;
+	}
+}
+ARBOL::~ARBOL( ) {destruir(raiz);}
+      
+
+#endif
